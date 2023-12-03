@@ -40,6 +40,7 @@ class Workout {
 
 class Running extends Workout {
   type = 'running';
+  sort = 1;
 
   constructor(coords, distance, duration, cadence, id, clicks) {
     super(coords, distance, duration);
@@ -58,6 +59,7 @@ class Running extends Workout {
 }
 class Cycling extends Workout {
   type = 'cycling';
+  sort = 2;
 
   constructor(coords, distance, duration, elavationGain, id, clicks) {
     super(coords, distance, duration);
@@ -78,7 +80,10 @@ class Cycling extends Workout {
 let map,
   mapEvent,
   markers = [],
-  marker;
+  marker,
+  sortDr = true,
+  sortDi = true,
+  sortTy = true;
 class App {
   #mapZoomLevel = 13;
   #map;
@@ -95,7 +100,7 @@ class App {
     containerWorkouts.addEventListener('click', this._moveToPopup.bind(this));
     btnReset.addEventListener('click', this._openModal.bind(this));
     btnDeleteAll.addEventListener('click', this._deleteAll.bind(this));
-    btnSort.addEventListener('click', this._sortAll.bind(this));
+    btnSort.addEventListener('click', this._openSortModal.bind(this));
   }
   _getPosition() {
     navigator.geolocation.getCurrentPosition(
@@ -361,13 +366,60 @@ class App {
     this.#workouts.splice(0, this.#workouts.length);
     localStorage.removeItem('workouts');
   }
-  _sortAll() {
-    const array = [1, 2, 6, 34, 3, 2, 7, 9];
-    array.sort((a, b) => a - b);
-    console.log(array);
-    console.log(this.#workouts);
-    this.#workouts.sort((a, b) => a.duration - b.duration);
-    this.#workouts.forEach(e => this._renderWorkout.call(e));
+  _openSortModal() {
+    document.querySelector('.sort__options').classList.toggle('hidden');
+    document
+      .querySelector('.sortby__duration')
+      .addEventListener('click', this._helperDuration.bind(this));
+    document
+      .querySelector('.sortby__distance')
+      .addEventListener('click', this._helperDistance.bind(this));
+    document
+      .querySelector('.sortby__type')
+      .addEventListener('click', this._helperType.bind(this));
+  }
+  _helperDuration() {
+    this._sortByDuration.call(this, !sortDr);
+    sortDr = !sortDr;
+  }
+  _helperDistance() {
+    this._sortByDistance.call(this, !sortDi);
+    sortDi = !sortDi;
+  }
+  _helperType() {
+    this._sortByType.call(this, !sortTy);
+    sortTy = !sortTy;
+  }
+  _sortByDuration(sort) {
+    document.querySelectorAll('.workout').forEach(a => {
+      a.remove();
+    });
+    console.log(sortDr);
+    sortDr
+      ? this.#workouts.sort((a, b) => a.duration - b.duration)
+      : this.#workouts.sort((a, b) => +a.id - +b.id);
+    this.#workouts.forEach(e => this._renderWorkout(e));
+    sortTy = sortDi = true;
+  }
+  _sortByDistance(sort) {
+    document.querySelectorAll('.workout').forEach(a => {
+      a.remove();
+    });
+    sortDi
+      ? this.#workouts.sort((a, b) => a.distance - b.distance)
+      : this.#workouts.sort((a, b) => +a.id - +b.id);
+    this.#workouts.forEach(e => this._renderWorkout(e));
+    sortDr = sortTy = true;
+  }
+  _sortByType(sort) {
+    document.querySelectorAll('.workout').forEach(a => {
+      a.remove();
+    });
+    sortTy
+      ? this.#workouts.sort((a, b) => a.sort - b.sort)
+      : this.#workouts.sort((a, b) => +a.id - +b.id);
+    this.#workouts.forEach(e => this._renderWorkout(e));
+    sortDr = sortDi = true;
   }
 }
 
