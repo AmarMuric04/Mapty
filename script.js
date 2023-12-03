@@ -136,7 +136,13 @@ class App {
     this.#mapEvent = mapE;
     form.classList.remove('hidden');
     inputDistance.focus();
-    this.#map.removeEventListener();
+
+    // this.#map.removeEventListener();
+    document.body.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        form.classList.add('hidden');
+      }
+    });
   }
   _hideForm() {
     form.style.display = 'none';
@@ -244,7 +250,9 @@ class App {
   _renderWorkout(workout) {
     let html = `
         <li class="workout workout--${workout.type}" data-id="${workout.id}">
-          <h2 class="workout__title">${workout.description}</h2>
+          <h2 class="workout__title">${
+            workout.description
+          } <span class="exit">x</span></h2>
           <div class="workout__details">
             <span class="workout__icon">${
               workout.type === 'running' ? '🏃' : '🚴‍♀️'
@@ -288,8 +296,20 @@ class App {
   }
   _moveToPopup(e) {
     const workoutEl = e.target.closest('.workout');
+
     if (!workoutEl) return;
-    const workout = this.#workouts.find(e => e.id === workoutEl.dataset.id);
+    const workout = this.#workouts.find(
+      (e, i) => e.id === workoutEl.dataset.id
+    );
+    if (e.target.classList.contains('exit')) {
+      workoutEl.remove();
+      this.#workouts.splice(
+        this.#workouts.findIndex(e => e.id === workoutEl.dataset.id),
+        1
+      );
+      this._setLocalStorage();
+      location.reload();
+    }
 
     this.#map.setView(workout.coords, this.#mapZoomLevel, {
       animate: true,
@@ -394,10 +414,9 @@ class App {
     document.querySelectorAll('.workout').forEach(a => {
       a.remove();
     });
-    console.log(sortDr);
     sortDr
       ? this.#workouts.sort((a, b) => a.duration - b.duration)
-      : this.#workouts.sort((a, b) => +a.id - +b.id);
+      : this.#workouts.sort((a, b) => b.duration - a.duration);
     this.#workouts.forEach(e => this._renderWorkout(e));
     sortTy = sortDi = true;
   }
@@ -407,7 +426,7 @@ class App {
     });
     sortDi
       ? this.#workouts.sort((a, b) => a.distance - b.distance)
-      : this.#workouts.sort((a, b) => +a.id - +b.id);
+      : this.#workouts.sort((a, b) => b.distance - a.distance);
     this.#workouts.forEach(e => this._renderWorkout(e));
     sortDr = sortTy = true;
   }
@@ -417,9 +436,12 @@ class App {
     });
     sortTy
       ? this.#workouts.sort((a, b) => a.sort - b.sort)
-      : this.#workouts.sort((a, b) => +a.id - +b.id);
+      : this.#workouts.sort((a, b) => b.sort - a.sort);
     this.#workouts.forEach(e => this._renderWorkout(e));
     sortDr = sortDi = true;
+  }
+  _removeForm() {
+    const workout = this.#workouts.find();
   }
 }
 
