@@ -7,6 +7,12 @@ const inputDistance = document.querySelector('.form__input--distance');
 const inputDuration = document.querySelector('.form__input--duration');
 const inputCadence = document.querySelector('.form__input--cadence');
 const inputElevation = document.querySelector('.form__input--elevation');
+const btnReset = document.querySelector('.btn__reset');
+const btnDeleteAll = document.querySelector('.btn__deleteAll');
+const btnSort = document.querySelector('.btn__sort');
+const btnContinue = document.querySelector('.btn__continue');
+const btnClose = document.querySelector('.btn__close');
+const modal = document.querySelector('.modal');
 
 class Workout {
   date = new Date();
@@ -69,7 +75,10 @@ class Cycling extends Workout {
   }
 }
 
-let map, mapEvent;
+let map,
+  mapEvent,
+  markers = [],
+  marker;
 class App {
   #mapZoomLevel = 13;
   #map;
@@ -84,6 +93,9 @@ class App {
     form.addEventListener('submit', this._newWorkout.bind(this));
     inputType.addEventListener('change', this._toggleElevationField.bind(this));
     containerWorkouts.addEventListener('click', this._moveToPopup.bind(this));
+    btnReset.addEventListener('click', this._openModal.bind(this));
+    btnDeleteAll.addEventListener('click', this._deleteAll.bind(this));
+    btnSort.addEventListener('click', this._sortAll.bind(this));
   }
   _getPosition() {
     navigator.geolocation.getCurrentPosition(
@@ -207,7 +219,7 @@ class App {
     form.removeEventListener('submit', this._newWorkout.bind(this));
   }
   _renderWorkoutMarker(workout) {
-    L.marker(workout.coords)
+    marker = L.marker(workout.coords)
       .addTo(this.#map)
       .bindPopup(
         L.popup({
@@ -222,6 +234,7 @@ class App {
         `${workout.type === 'running' ? '🚶‍♂️' : '🚴‍♂️'} ${workout.description}`
       )
       .openPopup();
+    markers.push(marker);
   }
   _renderWorkout(workout) {
     let html = `
@@ -321,10 +334,40 @@ class App {
       this._renderWorkout(work);
     });
   }
-  reset() {
-    this.#workouts.forEach(e => localStorage.removeItem(`${e.id}-clicks`));
+  _reset() {
     localStorage.removeItem('workouts');
     location.reload();
+  }
+  _openModal() {
+    modal.classList.remove('hidden');
+    document.querySelector('.sidebar').style.filter = 'blur(5px)';
+    document.querySelector('.buttons').style.filter = 'blur(5px)';
+    document.querySelector('#map').style.filter = 'blur(5px)';
+    modal.style.filter = 'blur(0px)';
+    btnContinue.addEventListener('click', this._reset.bind(this));
+    btnClose.addEventListener('click', function () {
+      modal.classList.add('hidden');
+      document.querySelector('.sidebar').style.filter = 'blur(0px)';
+      document.querySelector('.buttons').style.filter = 'blur(0px)';
+      document.querySelector('#map').style.filter = 'blur(0px)';
+    });
+  }
+  _deleteAll() {
+    document.querySelectorAll('.workout').forEach(a => {
+      a.remove();
+      markers.forEach(e => e.remove(a.coords));
+    });
+
+    this.#workouts.splice(0, this.#workouts.length);
+    localStorage.removeItem('workouts');
+  }
+  _sortAll() {
+    const array = [1, 2, 6, 34, 3, 2, 7, 9];
+    array.sort((a, b) => a - b);
+    console.log(array);
+    console.log(this.#workouts);
+    this.#workouts.sort((a, b) => a.duration - b.duration);
+    this.#workouts.forEach(e => this._renderWorkout.call(e));
   }
 }
 

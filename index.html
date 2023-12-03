@@ -129,10 +129,25 @@
       </p>
     </div>
     <div id="map"></div>
-    <!-- <div class="buttons">
-      <button>Reset</button>
-      <button>Delete All</button>
-      <button>Sort</button>
-    </div> -->
+    <div class="buttons">
+      <button class="btn__reset">Reset</button>
+      <button class="btn__deleteAll">Delete All</button>
+      <button class="btn__sort">Sort</button>
+    </div>
+    <div class="modal hidden">
+      <div class="logo__warning">
+        <img src="icon.png" class="logo__modal" alt="" />
+        <h1>Warning</h1>
+      </div>
+      <p>
+        Clicking continue will
+        <span class="highlight">completely wipe</span> all the data you
+        previously added to the App, are you sure you want to continue?
+      </p>
+      <div class="close__continue">
+        <button class="btn__continue">Continue</button>
+        <button class="btn__close">Close</button>
+      </div>
+    </div>
   </body>
 </html>
