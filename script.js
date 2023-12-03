@@ -25,11 +25,17 @@ class Workout {
   _setDescription() {
     //prettier-ignore
     const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-
+    if (String(new Date().getDate()).endsWith('3')) {
+      word = 'rd';
+    } else if (String(new Date().getDate()).endsWith('2')) {
+      word = 'nd';
+    } else if (String(new Date().getDate()).endsWith('1')) {
+      word = 'st';
+    } else word = 'th';
     //prettier-ignore
     this.description = `${
       this.type.slice(0, 1).toUpperCase() + this.type.slice(1)} on ${months[this.date.getMonth()]} 
-      ${String(this.date.getDate()).padStart(2, 0)}`;
+      ${this.date.getDate()}${word}`;
   }
   click() {
     this.clicks++;
@@ -83,7 +89,8 @@ let map,
   marker,
   sortDr = true,
   sortDi = true,
-  sortTy = true;
+  sortTy = true,
+  word;
 class App {
   #mapZoomLevel = 13;
   #map;
@@ -364,6 +371,14 @@ class App {
     location.reload();
   }
   _openModal() {
+    document.body.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        modal.classList.add('hidden');
+        document.querySelector('.sidebar').style.filter = 'blur(0px)';
+        document.querySelector('.buttons').style.filter = 'blur(0px)';
+        document.querySelector('#map').style.filter = 'blur(0px)';
+      }
+    });
     modal.classList.remove('hidden');
     document.querySelector('.sidebar').style.filter = 'blur(5px)';
     document.querySelector('.buttons').style.filter = 'blur(5px)';
@@ -397,6 +412,9 @@ class App {
     document
       .querySelector('.sortby__type')
       .addEventListener('click', this._helperType.bind(this));
+    document
+      .querySelector('.original')
+      .addEventListener('click', this._sortOriginal.bind(this));
   }
   _helperDuration() {
     this._sortByDuration.call(this, !sortDr);
@@ -410,6 +428,7 @@ class App {
     this._sortByType.call(this, !sortTy);
     sortTy = !sortTy;
   }
+
   _sortByDuration(sort) {
     document.querySelectorAll('.workout').forEach(a => {
       a.remove();
@@ -440,8 +459,12 @@ class App {
     this.#workouts.forEach(e => this._renderWorkout(e));
     sortDr = sortDi = true;
   }
-  _removeForm() {
-    const workout = this.#workouts.find();
+  _sortOriginal(sort) {
+    document.querySelectorAll('.workout').forEach(a => {
+      a.remove();
+    });
+    this.#workouts.sort((a, b) => a.id - b.id);
+    this.#workouts.forEach(e => this._renderWorkout(e));
   }
 }
 

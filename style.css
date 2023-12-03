@@ -96,6 +96,9 @@ a:visited {
   top: -1.5rem;
   right: -1rem;
 }
+.exit:hover {
+  color: rgb(239, 134, 134);
+}
 
 .workout__details {
   display: flex;
@@ -282,7 +285,7 @@ a:visited {
   border: none;
 }
 .btn__continue {
-  background-color: rgb(245, 107, 107);
+  background-color: var(--color-dark--2);
   color: white;
 }
 .logo__warning {
@@ -303,7 +306,7 @@ a:visited {
 .sort__options {
   z-index: 1000;
   background-color: var(--color-dark--2);
-  margin-top: -24.7rem;
+  margin-top: -30.3rem;
   position: relative;
 }
 .sort__options ul {
@@ -324,4 +327,17 @@ a:visited {
 .sort__options li:nth-child(1) {
   background-color: var(--color-dark--1);
   cursor: default;
+}
+button:hover {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+li:hover {
+  opacity: 0.7;
+}
+.btn__continue:hover {
+  background-color: var(--color-dark--2);
+  opacity: 0.9;
+}
+.sortby:hover {
+  opacity: 1;
 }
