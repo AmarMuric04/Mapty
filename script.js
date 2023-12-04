@@ -87,7 +87,8 @@ let map,
   sortDr = false,
   sortDi = false,
   sortTy = false,
-  word;
+  word,
+  workoutEl;
 class App {
   #mapZoomLevel = 13;
   #map;
@@ -301,24 +302,51 @@ class App {
     form.insertAdjacentHTML('afterend', html);
   }
   _moveToPopup(e) {
-    const workoutEl = e.target.closest('.workout');
+    workoutEl = e.target.closest('.workout');
 
     // console.log(e.target);
 
     if (e.target.classList.contains('edit__button')) {
-      form.classList.remove('hidden');
-      form.addEventListener('submit', function () {
-        this.#workouts[0].type = inputType.value;
-        this.#workouts[0].distance = inputDistance.value;
-        this.#workouts[0].duration = inputDuration.value;
-        if (inputType.value === 'Running') {
-          this.#workouts[0].cadence = inputCadence.value;
-        }
-        if (inputType.value === 'Cycling') {
-          this.#workouts[0].elevation = inputElevation.value;
-        }
+      const form2 = document.createElement('div');
+      form2.classList.add('form');
+      form2.innerHTML = `<div class="form__row">
+            <label class="form__label">Type</label>
+            <select class="form__input form__input--type">
+              <option value="running">Running</option>
+              <option value="cycling">Cycling</option>
+            </select>
+          </div>
+          <div class="form__row">
+            <label class="form__label">Distance</label>
+            <input class="form__input form__input--distance" placeholder="km" />
+          </div>
+          <div class="form__row">
+            <label class="form__label">Duration</label>
+            <input
+              class="form__input form__input--duration"
+              placeholder="min"
+            />
+          </div>
+          <div class="form__row">
+            <label class="form__label">Cadence</label>
+            <input
+              class="form__input form__input--cadence"
+              placeholder="step/min"
+            />
+          </div>
+          <div class="form__row form__row--hidden">
+            <label class="form__label">Elev Gain</label>
+            <input
+              class="form__input form__input--elevation"
+              placeholder="meters"
+            />
+          </div>
+          <button class="form__btn">OK</button>`;
+      // form2.classList.remove('hidden');
+      form2.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') console.log(123);
       });
-      e.target.closest('.workout').replaceWith(form);
+      e.target.closest('.workout').replaceWith(form2);
     }
 
     if (!workoutEl || e.target.classList.contains('edit__button')) return;
