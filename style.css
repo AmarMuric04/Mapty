@@ -60,6 +60,7 @@ a:visited {
   height: 77vh;
   overflow-y: scroll;
   overflow-x: hidden;
+  transition: 1s all;
 }
 
 .workouts::-webkit-scrollbar {
@@ -68,14 +69,18 @@ a:visited {
 
 .workout {
   background-color: var(--color-dark--2);
+  height: 15rem;
   border-radius: 5px;
   padding: 1.5rem 2.25rem;
   margin-bottom: 1.75rem;
   cursor: pointer;
 
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 0.75rem 1.5rem;
+}
+.workout:hover {
+  opacity: 1;
 }
 .workout--running {
   border-left: 5px solid var(--color-brand--2);
@@ -340,4 +345,51 @@ li:hover {
 }
 .sortby:hover {
   opacity: 1;
+}
+.edit__button {
+  height: 2rem;
+  width: 12rem;
+  background-color: var(--color-dark--1);
+  border: none;
+  color: white;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+}
+.edit__button:hover {
+  font-weight: bold;
+  cursor: pointer;
+}
+._running:hover {
+  background-color: var(--color-brand--2);
+}
+._cycling:hover {
+  background-color: var(--color-brand--1);
+}
+.edit__wrapper {
+  display: grid;
+  width: 210%;
+  grid-template-columns: 65% 35%;
+}
+.edit__text {
+  display: inline;
+}
+.moveToCenter {
+  z-index: 2000;
+  animation: forwards 2s moveToCenter;
+}
+
+@keyframes moveToCenter {
+  0% {
+    position: relative;
+    left: 0%;
+    top: 0%;
+    transform: scale(1);
+  }
+  100% {
+    position: relative;
+
+    left: 40%;
+    top: 40%;
+    transform: scale(1.5);
+  }
 }

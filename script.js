@@ -1,5 +1,4 @@
 'use strict';
-
 const form = document.querySelector('.form');
 const containerWorkouts = document.querySelector('.workouts');
 const inputType = document.querySelector('.form__input--type');
@@ -7,12 +6,12 @@ const inputDistance = document.querySelector('.form__input--distance');
 const inputDuration = document.querySelector('.form__input--duration');
 const inputCadence = document.querySelector('.form__input--cadence');
 const inputElevation = document.querySelector('.form__input--elevation');
-const btnReset = document.querySelector('.btn__reset');
+// const btnReset = document.querySelector('.btn__reset');
 const btnDeleteAll = document.querySelector('.btn__deleteAll');
 const btnSort = document.querySelector('.btn__sort');
-const btnContinue = document.querySelector('.btn__continue');
-const btnClose = document.querySelector('.btn__close');
-const modal = document.querySelector('.modal');
+// const btnContinue = document.querySelector('.btn__continue');
+// const btnClose = document.querySelector('.btn__close');
+// const modal = document.querySelector('.modal');
 
 class Workout {
   date = new Date();
@@ -43,7 +42,6 @@ class Workout {
     // console.log(this);
   }
 }
-
 class Running extends Workout {
   type = 'running';
   sort = 1;
@@ -82,14 +80,13 @@ class Cycling extends Workout {
     return this.speed;
   }
 }
-
 let map,
   mapEvent,
   markers = [],
   marker,
-  sortDr = true,
-  sortDi = true,
-  sortTy = true,
+  sortDr = false,
+  sortDi = false,
+  sortTy = false,
   word;
 class App {
   #mapZoomLevel = 13;
@@ -105,7 +102,7 @@ class App {
     form.addEventListener('submit', this._newWorkout.bind(this));
     inputType.addEventListener('change', this._toggleElevationField.bind(this));
     containerWorkouts.addEventListener('click', this._moveToPopup.bind(this));
-    btnReset.addEventListener('click', this._openModal.bind(this));
+    // btnReset.addEventListener('click', this._openModal.bind(this));
     btnDeleteAll.addEventListener('click', this._deleteAll.bind(this));
     btnSort.addEventListener('click', this._openSortModal.bind(this));
   }
@@ -284,7 +281,9 @@ class App {
             <span class="workout__icon">🦶🏼</span>
             <span class="workout__value">${workout.cadence}</span>
             <span class="workout__unit">spm</span>
-          </div>
+            </div>
+          <div class="edit__wrapper"> <p class="edit__text"></p>
+           <button class="edit__button _running">EDIT WORKOUT</button></div>
         </li>`;
     else
       html += `
@@ -298,13 +297,32 @@ class App {
             <span class="workout__value">${workout.elavationGain}</span>
             <span class="workout__unit">m</span>
           </div>
+          <div class="edit__wrapper"> <p class="edit__text"></p>
+           <button class="edit__button _cycling">EDIT WORKOUT</button></div>
         </li>`;
     form.insertAdjacentHTML('afterend', html);
   }
   _moveToPopup(e) {
     const workoutEl = e.target.closest('.workout');
 
-    if (!workoutEl) return;
+    console.log(e.target);
+
+    if (e.target.classList.contains('edit__button')) {
+      e.target.closest('.workout').classList.add('moveToCenter');
+      e.target.previousElementSibling.insertAdjacentHTML(
+        'afterbegin',
+        '<p class="edit__text">Click on the field you want to edit</p>'
+      );
+      document.querySelectorAll('.workout__details').forEach(e => {
+        e;
+        addEventListener('click', function (e) {
+          e.target.closest('.workout__details').remove();
+          console.log(1);
+        });
+      });
+    }
+
+    if (!workoutEl || e.target.classList.contains('edit__button')) return;
     const workout = this.#workouts.find(
       (e, i) => e.id === workoutEl.dataset.id
     );
@@ -366,32 +384,32 @@ class App {
       this._renderWorkout(work);
     });
   }
-  _reset() {
-    localStorage.removeItem('workouts');
-    location.reload();
-  }
-  _openModal() {
-    document.body.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') {
-        modal.classList.add('hidden');
-        document.querySelector('.sidebar').style.filter = 'blur(0px)';
-        document.querySelector('.buttons').style.filter = 'blur(0px)';
-        document.querySelector('#map').style.filter = 'blur(0px)';
-      }
-    });
-    modal.classList.remove('hidden');
-    document.querySelector('.sidebar').style.filter = 'blur(5px)';
-    document.querySelector('.buttons').style.filter = 'blur(5px)';
-    document.querySelector('#map').style.filter = 'blur(5px)';
-    modal.style.filter = 'blur(0px)';
-    btnContinue.addEventListener('click', this._reset.bind(this));
-    btnClose.addEventListener('click', function () {
-      modal.classList.add('hidden');
-      document.querySelector('.sidebar').style.filter = 'blur(0px)';
-      document.querySelector('.buttons').style.filter = 'blur(0px)';
-      document.querySelector('#map').style.filter = 'blur(0px)';
-    });
-  }
+  // _reset() {
+  //   localStorage.removeItem('workouts');
+  //   location.reload();
+  // }
+  // _openModal() {
+  //   document.body.addEventListener('keydown', function (e) {
+  //     if (e.key === 'Escape') {
+  //       modal.classList.add('hidden');
+  //       document.querySelector('.sidebar').style.filter = 'blur(0px)';
+  //       document.querySelector('.buttons').style.filter = 'blur(0px)';
+  //       document.querySelector('#map').style.filter = 'blur(0px)';
+  //     }
+  //   });
+  //   modal.classList.remove('hidden');
+  //   document.querySelector('.sidebar').style.filter = 'blur(5px)';
+  //   document.querySelector('.buttons').style.filter = 'blur(5px)';
+  //   document.querySelector('#map').style.filter = 'blur(5px)';
+  //   modal.style.filter = 'blur(0px)';
+  //   btnContinue.addEventListener('click', this._reset.bind(this));
+  //   btnClose.addEventListener('click', function () {
+  //     modal.classList.add('hidden');
+  //     document.querySelector('.sidebar').style.filter = 'blur(0px)';
+  //     document.querySelector('.buttons').style.filter = 'blur(0px)';
+  //     document.querySelector('#map').style.filter = 'blur(0px)';
+  //   });
+  // }
   _deleteAll() {
     document.querySelectorAll('.workout').forEach(a => {
       a.remove();
@@ -428,7 +446,6 @@ class App {
     this._sortByType.call(this, !sortTy);
     sortTy = !sortTy;
   }
-
   _sortByDuration(sort) {
     document.querySelectorAll('.workout').forEach(a => {
       a.remove();
@@ -467,11 +484,4 @@ class App {
     this.#workouts.forEach(e => this._renderWorkout(e));
   }
 }
-
 const app = new App();
-
-// const run1 = new Running([39, -12], 5.2, 24, 178);
-// const cycle1 = new Running([39, -12], 27, 95, 523);
-
-// console.log(cycle1);
-// console.log(run1);
