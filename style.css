@@ -365,31 +365,3 @@ li:hover {
 ._cycling:hover {
   background-color: var(--color-brand--1);
 }
-.edit__wrapper {
-  display: grid;
-  width: 210%;
-  grid-template-columns: 65% 35%;
-}
-.edit__text {
-  display: inline;
-}
-.moveToCenter {
-  z-index: 2000;
-  animation: forwards 2s moveToCenter;
-}
-
-@keyframes moveToCenter {
-  0% {
-    position: relative;
-    left: 0%;
-    top: 0%;
-    transform: scale(1);
-  }
-  100% {
-    position: relative;
-
-    left: 40%;
-    top: 40%;
-    transform: scale(1.5);
-  }
-}

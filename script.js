@@ -282,8 +282,7 @@ class App {
             <span class="workout__value">${workout.cadence}</span>
             <span class="workout__unit">spm</span>
             </div>
-          <div class="edit__wrapper"> <p class="edit__text"></p>
-           <button class="edit__button _running">EDIT WORKOUT</button></div>
+           <button class="edit__button _running">EDIT WORKOUT</button>
         </li>`;
     else
       html += `
@@ -297,29 +296,29 @@ class App {
             <span class="workout__value">${workout.elavationGain}</span>
             <span class="workout__unit">m</span>
           </div>
-          <div class="edit__wrapper"> <p class="edit__text"></p>
-           <button class="edit__button _cycling">EDIT WORKOUT</button></div>
+           <button class="edit__button _cycling">EDIT WORKOUT</button>
         </li>`;
     form.insertAdjacentHTML('afterend', html);
   }
   _moveToPopup(e) {
     const workoutEl = e.target.closest('.workout');
 
-    console.log(e.target);
+    // console.log(e.target);
 
     if (e.target.classList.contains('edit__button')) {
-      e.target.closest('.workout').classList.add('moveToCenter');
-      e.target.previousElementSibling.insertAdjacentHTML(
-        'afterbegin',
-        '<p class="edit__text">Click on the field you want to edit</p>'
-      );
-      document.querySelectorAll('.workout__details').forEach(e => {
-        e;
-        addEventListener('click', function (e) {
-          e.target.closest('.workout__details').remove();
-          console.log(1);
-        });
+      form.classList.remove('hidden');
+      form.addEventListener('submit', function () {
+        this.#workouts[0].type = inputType.value;
+        this.#workouts[0].distance = inputDistance.value;
+        this.#workouts[0].duration = inputDuration.value;
+        if (inputType.value === 'Running') {
+          this.#workouts[0].cadence = inputCadence.value;
+        }
+        if (inputType.value === 'Cycling') {
+          this.#workouts[0].elevation = inputElevation.value;
+        }
       });
+      e.target.closest('.workout').replaceWith(form);
     }
 
     if (!workoutEl || e.target.classList.contains('edit__button')) return;
