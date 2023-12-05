@@ -365,3 +365,7 @@ li:hover {
 ._cycling:hover {
   background-color: var(--color-brand--1);
 }
+.edit__input {
+  width: 5rem;
+  height: 3rem;
+}

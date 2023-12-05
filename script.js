@@ -65,10 +65,10 @@ class Cycling extends Workout {
   type = 'cycling';
   sort = 2;
 
-  constructor(coords, distance, duration, elavationGain, id, clicks) {
+  constructor(coords, distance, duration, elevationGain, id, clicks) {
     super(coords, distance, duration);
 
-    this.elavationGain = elavationGain;
+    this.elevationGain = elevationGain;
     this.id = id;
     this.clicks = clicks;
     this.calcSpeed();
@@ -88,7 +88,8 @@ let map,
   sortDi = false,
   sortTy = false,
   word,
-  workoutEl;
+  workoutEl,
+  edit = false;
 class App {
   #mapZoomLevel = 13;
   #map;
@@ -262,12 +263,16 @@ class App {
             <span class="workout__icon">${
               workout.type === 'running' ? '🏃' : '🚴‍♀️'
             }</span>
-            <span class="workout__value">${workout.distance}</span>
+            <span class="workout__value">${
+              workout.distance
+            }<input class="edit__input hidden"  type="number"/></span>
             <span class="workout__unit">km</span>
           </div>
           <div class="workout__details">
             <span class="workout__icon">⏱</span>
-            <span class="workout__value">${workout.duration}</span>
+            <span class="workout__value">${
+              workout.duration
+            }<input class="edit__input hidden"  type="number"/></span>
             <span class="workout__unit">min</span>
           </div>
 `;
@@ -275,29 +280,39 @@ class App {
       html += `
           <div class="workout__details">
             <span class="workout__icon">⚡️</span>
-            <span class="workout__value">${workout.pace.toFixed(1)}</span>
+            <span class="workout__value">${workout.pace.toFixed(
+              1
+            )}<input class="edit__input hidden"  type="number"/></span>
             <span class="workout__unit">min/km</span>
           </div>
           <div class="workout__details">
             <span class="workout__icon">🦶🏼</span>
-            <span class="workout__value">${workout.cadence}</span>
+            <span class="workout__value">${
+              workout.cadence
+            }<input class="edit__input hidden"  type="number"/></span>
             <span class="workout__unit">spm</span>
             </div>
            <button class="edit__button _running">EDIT WORKOUT</button>
+            <p class="edit__text"></p>
         </li>`;
     else
       html += `
           <div class="workout__details">
             <span class="workout__icon">⚡️</span>
-            <span class="workout__value">${workout.speed.toFixed(1)}6</span>
+            <span class="workout__value">${workout.speed.toFixed(
+              1
+            )}<input class="edit__input hidden"  type="number"/></span>
             <span class="workout__unit">km/h</span>
           </div>
           <div class="workout__details">
             <span class="workout__icon">⛰</span>
-            <span class="workout__value">${workout.elavationGain}</span>
+            <span class="workout__value">${
+              workout.elevationGain
+            }<input class="edit__input hidden"  type="number"/></span>
             <span class="workout__unit">m</span>
           </div>
            <button class="edit__button _cycling">EDIT WORKOUT</button>
+           <p class="edit__text"></p>
         </li>`;
     form.insertAdjacentHTML('afterend', html);
   }
@@ -305,48 +320,39 @@ class App {
     workoutEl = e.target.closest('.workout');
 
     // console.log(e.target);
+    console.log(edit);
+    if (!edit) {
+      if (e.target.classList.contains('edit__button')) {
+        e.target.nextElementSibling.textContent =
+          'Click the value you want to change';
+        document.querySelectorAll('.workout__details').forEach(e =>
+          e.addEventListener('click', function (e) {
+            if (e.target.classList.contains('edit__input')) return;
+            document
+              .querySelectorAll('.edit__input')
+              .forEach(e => e.classList.add('hidden'));
 
-    if (e.target.classList.contains('edit__button')) {
-      const form2 = document.createElement('div');
-      form2.classList.add('form');
-      form2.innerHTML = `<div class="form__row">
-            <label class="form__label">Type</label>
-            <select class="form__input form__input--type">
-              <option value="running">Running</option>
-              <option value="cycling">Cycling</option>
-            </select>
-          </div>
-          <div class="form__row">
-            <label class="form__label">Distance</label>
-            <input class="form__input form__input--distance" placeholder="km" />
-          </div>
-          <div class="form__row">
-            <label class="form__label">Duration</label>
-            <input
-              class="form__input form__input--duration"
-              placeholder="min"
-            />
-          </div>
-          <div class="form__row">
-            <label class="form__label">Cadence</label>
-            <input
-              class="form__input form__input--cadence"
-              placeholder="step/min"
-            />
-          </div>
-          <div class="form__row form__row--hidden">
-            <label class="form__label">Elev Gain</label>
-            <input
-              class="form__input form__input--elevation"
-              placeholder="meters"
-            />
-          </div>
-          <button class="form__btn">OK</button>`;
-      // form2.classList.remove('hidden');
-      form2.addEventListener('keydown', function (e) {
-        if (e.key === 'Enter') console.log(123);
-      });
-      e.target.closest('.workout').replaceWith(form2);
+            if (e.target.classList.contains('workout__value')) {
+              document
+                .querySelectorAll('.edit__text')
+                .forEach(e => (e.textContent = ''));
+              e.target.children[0].classList.remove('hidden');
+              e.target.children[0].addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                  if (e.target.value < 0 || e.target.value === '') return;
+                  e.target.closest(
+                    '.workout__value'
+                  ).innerHTML = `${e.target.value} <input class="edit__input hidden"  type="number"/>`;
+                  e.target.classList.add('hidden');
+
+                  edit = !edit;
+                  console.log(edit);
+                }
+              });
+            }
+          })
+        );
+      }
     }
 
     if (!workoutEl || e.target.classList.contains('edit__button')) return;
@@ -400,7 +406,7 @@ class App {
             e.coords,
             e.distance,
             e.duration,
-            e.elavationGain,
+            e.elevationGain,
             e.id,
             e.clicks
           )
